@@ -7,29 +7,32 @@ void setup() {
   byte segmentPins[] = {8,9,10,11,12,13,14,15};
   bool resistorsOnSegments = false; // 'false' means resistors are on digit pins
   byte hardwareConfig = COMMON_CATHODE; // See README.md for options
+  byte updateWithDelays = false;//Default. Recommended
   sevseg.begin(hardwareConfig, numDigits, digitPins, segmentPins, resistorsOnSegments);
   sevseg.setBrightness(90);
+  
 }
 
 void loop() 
 {
   static unsigned long timer = millis();
-  static int deciSeconds = 0;
-  sevseg.setNumber(deciSeconds, 0);
-  if (millis() - timer >= 300) 
+  static int minute =59;
+  static int hour=23;
+ 
+  if(millis()>=timer)
   {
-    timer += 300;
-    deciSeconds++; 
-    if (deciSeconds%100 == 59) 
-    { 
-      deciSeconds=deciSeconds+41;
-    }
-    else
-    {
-      deciSeconds=deciSeconds+1;
-    }
-   if (deciSeconds == 2400)
-    deciSeconds =0 ;
+      timer +=300;
+
+      if(++minute>=60)
+      {
+        minute =0;
+        if(++hour>=24)
+        hour=0;
+      }
   }
-  sevseg.refreshDisplay(); // Must run repeatedly
+
+ sevseg.setNumber(hour*100+minute,3);
+
+  sevseg.refreshDisplay();
+
 }
